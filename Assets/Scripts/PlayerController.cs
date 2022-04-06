@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,15 +13,16 @@ public class PlayerController : MonoBehaviour
     private GameObject focalPoint;
     public GameObject powerupIndicator;
 
+    
 
-    // Start is called before the first frame update
+
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
         focalPoint = GameObject.Find("Focal Point");
     }
 
-    // Update is called once per frame
+    
     void Update()
     {
         float forwardInput = Input.GetAxis("Vertical");
@@ -38,6 +40,8 @@ public class PlayerController : MonoBehaviour
             Destroy(other.gameObject);
             StartCoroutine(PowerupCD());
         }
+
+        // make new powerups
     }
 
     // When have powerup increase in strength of player
@@ -50,6 +54,8 @@ public class PlayerController : MonoBehaviour
 
             enemyRb.AddForce(awayFromPlayer * powerupStr, ForceMode.Impulse);
         }
+
+        // powerup effects
     }
 
     // Cooldown for powerup
@@ -58,5 +64,8 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(7);
         hasPowerup = false;
         powerupIndicator.gameObject.SetActive(false);
+        
     }
+
+   
 }

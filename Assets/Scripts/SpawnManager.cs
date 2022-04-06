@@ -1,17 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class SpawnManager : MonoBehaviour
 {
     public GameObject enemyPrefabs;
     public GameObject powerupPrefab;
 
+    public TextMeshProUGUI waveText;
+    
+
     private float spawnRange = 9;
     public int waveNumber = 1;
     public int enemyCount;
 
-    // Start is called before the first frame update
+    
     void Start()
     {
 
@@ -20,7 +25,7 @@ public class SpawnManager : MonoBehaviour
 
     }
 
-    // Update is called once per frame
+    
     void Update()
     {
         enemyCount = FindObjectsOfType<Enemy>().Length;
@@ -31,6 +36,8 @@ public class SpawnManager : MonoBehaviour
             SpawnEnemyWave(waveNumber);
             waveNumber++;
         }
+
+        waveText.text = "Wave: " + (waveNumber - 1).ToString();
     }
 
     // Generate random Vector3 for spawning
