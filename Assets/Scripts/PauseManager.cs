@@ -3,16 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
 public class PauseManager : MonoBehaviour
 {
-    public static bool gameIsPaused = false;
+    public static bool gameIsPaused = false;    
+
     public GameObject pauseMenuUI;
     
-    void Start()
-    {
-        
-    }
-
     
     void Update()
     {
@@ -26,7 +23,11 @@ public class PauseManager : MonoBehaviour
             {
                 Pause();
             }
+
+            
         }
+
+        
     }
 
     public void Resume()
@@ -47,4 +48,6 @@ public class PauseManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         Time.timeScale = 1f;
     }
+
+    
 }

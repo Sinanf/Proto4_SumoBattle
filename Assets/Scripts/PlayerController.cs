@@ -8,18 +8,20 @@ public class PlayerController : MonoBehaviour
     public float speed = 3f;
     private float powerupStr = 10f;
     public bool hasPowerup;
+    public bool isGameOver = false;
 
     private Rigidbody playerRb;
     private GameObject focalPoint;
     public GameObject powerupIndicator;
-
     
 
+    
 
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
         focalPoint = GameObject.Find("Focal Point");
+        
     }
 
     
@@ -28,6 +30,10 @@ public class PlayerController : MonoBehaviour
         float forwardInput = Input.GetAxis("Vertical");
         playerRb.AddForce(focalPoint.transform.forward * speed * forwardInput);
         powerupIndicator.transform.position = transform.position;
+
+        
+
+        
     }
 
     // Trigger when powerup taken
@@ -67,5 +73,7 @@ public class PlayerController : MonoBehaviour
         
     }
 
-   
+    
+
+
 }
