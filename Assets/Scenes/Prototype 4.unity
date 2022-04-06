@@ -333,6 +333,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyPrefabs: {fileID: 6376248416297207250, guid: 4de87e7b8c27533459621f038fb56114, type: 3}
   powerupPrefab: {fileID: 2015543116186328134, guid: b1f49bba515380c4b9aa04b438c68514, type: 3}
+  powerupPrefab2: {fileID: 2015543116186328134, guid: c89b08e21dd2b204a8b92e9fd376bcd8, type: 3}
+  powerupPrefab3: {fileID: 2015543116186328134, guid: 828fe9a687550d44885a6470beb9680e, type: 3}
   waveText: {fileID: 1841771845}
   waveNumber: 1
   enemyCount: 1
@@ -1446,6 +1448,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hasPowerup: 0
+  hasPowerup2: 0
+  hasPowerup3: 0
   powerupIndicator: {fileID: 1389867130}
 --- !u!1 &1811563453
 GameObject:
