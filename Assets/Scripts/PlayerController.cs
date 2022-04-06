@@ -5,7 +5,7 @@ using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 3f;
+    private float speed = 7f;
     private float powerupStr = 10f;
     public bool hasPowerup;
 
