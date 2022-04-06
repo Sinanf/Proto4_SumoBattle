@@ -8,13 +8,11 @@ public class PlayerController : MonoBehaviour
     public float speed = 3f;
     private float powerupStr = 10f;
     public bool hasPowerup;
-    public bool hasPowerup2;
     public bool isGameOver = false;
 
     private Rigidbody playerRb;
     private GameObject focalPoint;
     public GameObject powerupIndicator;
-    
     
 
     
@@ -49,17 +47,7 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(PowerupCD());
         }
 
-        if (other.CompareTag("Powerup2"))
-        {
-            hasPowerup2 = true;
-            Ability2();
-            powerupIndicator.gameObject.SetActive(true);            
-            Destroy(other.gameObject);
-            StartCoroutine(Powerup2CD());
-
-        }
-
-        
+        // make new powerups
     }
 
     // When have powerup increase in strength of player
@@ -67,20 +55,13 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy") && hasPowerup)
         {
-            if (gameObject.CompareTag("Powerup"))
-            {
-                Rigidbody enemyRb = collision.gameObject.GetComponent<Rigidbody>();
-                Vector3 awayFromPlayer = (collision.gameObject.transform.position - transform.position);
+            Rigidbody enemyRb = collision.gameObject.GetComponent<Rigidbody>();
+            Vector3 awayFromPlayer = (collision.gameObject.transform.position - transform.position);
 
-                enemyRb.AddForce(awayFromPlayer * powerupStr, ForceMode.Impulse);
-            }
-
-            
-            
+            enemyRb.AddForce(awayFromPlayer * powerupStr, ForceMode.Impulse);
         }
 
         // powerup effects
-
     }
 
     // Cooldown for powerup
@@ -92,33 +73,7 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    private void Ability2()
-    {
-        Vector3 scale = transform.localScale;
-        scale.x = 5F;
-        scale.y = 5F; // your new value.
-        scale.z = 5F;
-        playerRb.mass = 10;
-        transform.localScale = scale;
-              
-        
-
-
-    }
-
-    IEnumerator Powerup2CD()
-
-    {
-        yield return new WaitForSeconds(7);
-        hasPowerup2 = false;
-        Vector3 scale = transform.localScale;
-        scale.x = 1F;
-        scale.y = 1F; // your new value.
-        scale.z = 1F;
-        playerRb.mass = 1;
-        powerupIndicator.gameObject.SetActive(false);
-    }
-
+    
 
 
 }
