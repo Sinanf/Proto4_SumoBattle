@@ -5,15 +5,16 @@ using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
-    private float speed = 7f;
+    private float speed = 5f;
     private float powerupStr = 10f;
     public bool hasPowerup;
+    public bool hasPowerup2;
 
     private Rigidbody playerRb;
     private GameObject focalPoint;
     public GameObject powerupIndicator;
-
-    
+    private BoxCollider forceField;
+       
 
 
     void Start()
@@ -28,6 +29,10 @@ public class PlayerController : MonoBehaviour
         float forwardInput = Input.GetAxis("Vertical");
         playerRb.AddForce(focalPoint.transform.forward * speed * forwardInput);
         powerupIndicator.transform.position = transform.position;
+
+        
+
+
     }
 
     // Trigger when powerup taken
@@ -39,6 +44,16 @@ public class PlayerController : MonoBehaviour
             powerupIndicator.gameObject.SetActive(true);
             Destroy(other.gameObject);
             StartCoroutine(PowerupCD());
+        }
+
+        if (other.CompareTag("Powerup2"))
+        {
+            hasPowerup2 = true;
+            powerupIndicator.gameObject.SetActive(true);
+            Destroy(other.gameObject);
+            StartCoroutine(PowerupCD());
+
+            
         }
 
         // make new powerups
@@ -61,11 +76,15 @@ public class PlayerController : MonoBehaviour
     // Cooldown for powerup
     IEnumerator PowerupCD()
     {
-        yield return new WaitForSeconds(7);
+        yield return new WaitForSeconds(10);
         hasPowerup = false;
+        hasPowerup2 = false;
+        forceField.gameObject.SetActive(false);
         powerupIndicator.gameObject.SetActive(false);
-        
+
     }
+
+    
 
    
 }
