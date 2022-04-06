@@ -8,6 +8,7 @@ public class SpawnManager : MonoBehaviour
 {
     public GameObject enemyPrefabs;
     public GameObject powerupPrefab;
+    //public GameObject powerupPrefab2;
 
     public TextMeshProUGUI waveText;
     
@@ -21,6 +22,7 @@ public class SpawnManager : MonoBehaviour
     {
 
         Instantiate(powerupPrefab, GenerateSpawnPos(), powerupPrefab.transform.rotation);
+        //Instantiate(powerupPrefab2, GenerateSpawnPos(), powerupPrefab.transform.rotation);
         SpawnEnemyWave(waveNumber);
 
     }
