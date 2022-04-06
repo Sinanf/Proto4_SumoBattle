@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     private float speed = 7f;
     private float powerupStr = 10f;
+    private float powerupStr3 = 20f;
     public bool hasPowerup;
     public bool hasPowerup2;
     public bool hasPowerup3;
@@ -84,7 +85,7 @@ public class PlayerController : MonoBehaviour
         {
             //ability
             Rigidbody enemyRb = collision.gameObject.GetComponent<Rigidbody>();
-            enemyRb.AddForce(Vector3.up * powerupStr, ForceMode.Impulse);
+            enemyRb.AddForce(Vector3.up * powerupStr3, ForceMode.Impulse);
 
         }
 
