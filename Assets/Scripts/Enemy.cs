@@ -7,7 +7,6 @@ public class Enemy : MonoBehaviour
     private Rigidbody enemyRb;
     private GameObject player;
     public float speed = 1.5f;
-
     
 
     
@@ -28,8 +27,6 @@ public class Enemy : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-        
 
     }
 }
