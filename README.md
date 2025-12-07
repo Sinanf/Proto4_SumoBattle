@@ -1,53 +1,191 @@
-# Proto4_SumoBattle
+# Proto4_SumoBattle - Development Guide
 
-A Sumo Battle game prototype developed in Unity. The objective is to survive waves of enemies by knocking them off the platform while utilizing various power-ups.
+This documentation provides a step-by-step guide to recreating the **Sumo Battle** game from scratch in the latest version of Unity (2022 LTS, Unity 6, etc.).
 
-## 📋 Project Overview
+## 🛠️ Prerequisites
 
-- **Genre:** Arcade / Physics Action
-- **Unity Version:** 2021.3.0f1
-- **Render Pipeline:** Built-in Render Pipeline (Standard 3D)
+1.  **Install Unity**: Download Unity Hub and install the latest LTS version.
+2.  **Create Project**: Open Unity Hub > New Project > **3D Core**. Name it "SumoBattle".
 
-## 🎮 Gameplay Mechanics
+---
 
-- **Movement:** Physics-based movement. The player moves in the direction the camera is facing.
-- **Goal:** Knock all enemies off the platform.
-- **Waves:** Enemies increase with each wave.
-- **Power-ups:**
-  - **Type 1 (Push):** Increases knockback force against enemies.
-  - **Type 2 (Destroy):** Instantly destroys enemies on contact.
-  - **Type 3 (Launch):** Launches enemies upwards.
+## 🏗️ Step 1: Scene Setup
 
-## 📂 Project Structure
+### The Arena
+1.  Right-click in Hierarchy > **3D Object > Cylinder**. Name it "Island".
+    -   Scale: `(10, 0.5, 10)` (Flatten it).
+    -   Position: `(0, -0.25, 0)`.
+2.  Create a **Material** (Assets > Create > Material) named "GroundMat". Set its color to something distinct and drag it onto the Island.
 
-### Key Directories
-- `Assets/Scripts/`: Contains all C# scripts for game logic.
-- `Assets/Scenes/`: Contains the main game scene (`Prototype 4`).
-- `Assets/Prefabs/`: Contains Player, Enemy, and Power-up prefabs.
-- `Assets/Course Library/`: Contains base assets (models, materials).
+### The Camera System
+This game uses a "Focal Point" system where the camera rotates around the center, and the player moves relative to the camera's view.
 
-### Key Scripts
-- **`PlayerController.cs`**: Handles player physics, input, and power-up interactions.
-- **`SpawnManager.cs`**: Manages enemy waves and power-up spawning logic.
-- **`Enemy.cs`**: Controls enemy behavior (chasing the player).
-- **`RotateCamera.cs`**: Handles camera rotation around the focal point.
+1.  Create an Empty Object (Right-click > Create Empty). Name it **"Focal Point"**.
+    -   Position: `(0, 0, 0)`.
+2.  Drag the **Main Camera** onto the "Focal Point" to make it a child.
+    -   Set Camera Position: `(0, 5, -10)` approx.
+    -   Set Camera Rotation: `(20, 0, 0)` to look down.
+3.  Create script `RotateCamera.cs` and attach it to **Focal Point**.
 
-## 🚀 How to Start from Scratch (Migration Guide)
+**`RotateCamera.cs` Logic:**
+```csharp
+using UnityEngine;
+public class RotateCamera : MonoBehaviour {
+    public float rotationSpeed = 50.0f;
+    void Update() {
+        float horizontalInput = Input.GetAxis("Horizontal");
+        transform.Rotate(Vector3.up, horizontalInput * rotationSpeed * Time.deltaTime);
+    }
+}
+```
 
-If you want to move this project to a new Unity version or start fresh, follow these steps:
+---
 
-### Option A: Export/Import Package (Recommended)
-1. Open this project in Unity 2021.3.x.
-2. Right-click the `Assets` folder in the Project view.
-3. Select **Export Package...**.
-4. Ensure "Include dependencies" is checked and click **Export**. Save the file (e.g., `SumoBattle.unitypackage`).
-5. Create a new 3D Project in your desired Unity version (e.g., Unity 6 or 2022 LTS).
-6. In the new project, go to **Assets > Import Package > Custom Package**.
-7. Select your exported file and click **Import**.
-8. Open `Assets/Scenes/Prototype 4` to start.
+## 🏃 Step 2: The Player
 
-### Option B: Manual Migration
-1. Create a new Unity 3D Project.
-2. Copy the entire `Assets` folder from this repository into the new project's folder (merging with the existing Assets folder).
-3. If you have errors regarding `TextMeshPro`:
-   - Go to **Window > TextMeshPro > Import TMP Essentials**.
+1.  Create a **Sphere**. Name it "Player". Position `(0, 0, 0)`.
+2.  Add Component > **Rigidbody**.
+    -   Mass: `1`.
+    -   Drag: `1` (helps control).
+3.  Create script `PlayerController.cs` and attach to Player.
+
+**`PlayerController.cs` Logic:**
+- Needs reference to `Focal Point` to know "forward".
+- Needs `Rigidbody` to apply force.
+```csharp
+using UnityEngine;
+public class PlayerController : MonoBehaviour {
+    private Rigidbody playerRb;
+    private GameObject focalPoint;
+    public float speed = 5.0f;
+
+    void Start() {
+        playerRb = GetComponent<Rigidbody>();
+        focalPoint = GameObject.Find("Focal Point");
+    }
+
+    void Update() {
+        float forwardInput = Input.GetAxis("Vertical");
+        // Move in the direction the Focal Point (Camera) is facing
+        playerRb.AddForce(focalPoint.transform.forward * speed * forwardInput);
+    }
+}
+```
+
+---
+
+## 🤖 Step 3: The Enemy
+
+1.  Create a **Sphere**. Name it "Enemy".
+2.  Add Component > **Rigidbody**.
+3.  Create script `Enemy.cs` and attach it.
+4.  **Important**: Drag this Enemy into your `Assets/Prefabs` folder to make it a **Prefab**, then delete it from the scene.
+
+**`Enemy.cs` Logic:**
+- Finds the "Player" and moves towards it.
+- Destroys itself if it falls off the map (`y < -10`).
+```csharp
+using UnityEngine;
+public class Enemy : MonoBehaviour {
+    public float speed = 3.0f;
+    private Rigidbody enemyRb;
+    private GameObject player;
+
+    void Start() {
+        enemyRb = GetComponent<Rigidbody>();
+        player = GameObject.Find("Player");
+    }
+
+    void Update() {
+        if(player == null) return; // Safety check
+        Vector3 lookDirection = (player.transform.position - transform.position).normalized;
+        enemyRb.AddForce(lookDirection * speed);
+
+        if (transform.position.y < -10) Destroy(gameObject);
+    }
+}
+```
+
+---
+
+## 🌊 Step 4: Spawn Manager (Waves)
+
+1.  Create an Empty Object. Name it **"SpawnManager"**.
+2.  Create script `SpawnManager.cs` and attach it.
+3.  Assign your **Enemy Prefab** to the script slot in the Inspector.
+
+**`SpawnManager.cs` Logic:**
+- Spawns enemies at random positions.
+- Checks if enemy count is 0, then starts next wave.
+```csharp
+using UnityEngine;
+public class SpawnManager : MonoBehaviour {
+    public GameObject enemyPrefab;
+    private float spawnRange = 9;
+    public int waveNumber = 1;
+
+    void Start() {
+        SpawnEnemyWave(waveNumber);
+    }
+
+    void Update() {
+        int enemyCount = FindObjectsOfType<Enemy>().Length;
+        if (enemyCount == 0) {
+            waveNumber++;
+            SpawnEnemyWave(waveNumber);
+        }
+    }
+
+    void SpawnEnemyWave(int enemiesToSpawn) {
+        for (int i = 0; i < enemiesToSpawn; i++) {
+            Instantiate(enemyPrefab, GenerateSpawnPos(), enemyPrefab.transform.rotation);
+        }
+    }
+
+    private Vector3 GenerateSpawnPos() {
+        float spawnPosX = Random.Range(-spawnRange, spawnRange);
+        float spawnPosZ = Random.Range(-spawnRange, spawnRange);
+        return new Vector3(spawnPosX, 0, spawnPosZ);
+    }
+}
+```
+
+---
+
+## ⚡ Step 5: Powerups (Optional Polish)
+
+1.  Create a small **Cube** or Diamond shape. Tag it as "Powerup".
+2.  Make it a trigger: Check **Is Trigger** on the Box Collider.
+3.  Update `PlayerController.cs` to detect `OnTriggerEnter` with "Powerup", set a boolean flag `hasPowerup = true`.
+4.  Update `OnCollisionEnter` in `PlayerController` to apply extra force to Enemies if `hasPowerup` is true.
+
+```csharp
+// Inside PlayerController
+private void OnTriggerEnter(Collider other) {
+    if (other.CompareTag("Powerup")) {
+        hasPowerup = true;
+        Destroy(other.gameObject);
+        StartCoroutine(PowerupCountdownRoutine());
+    }
+}
+
+IEnumerator PowerupCountdownRoutine() {
+    yield return new WaitForSeconds(7);
+    hasPowerup = false;
+}
+
+private void OnCollisionEnter(Collision collision) {
+    if (collision.gameObject.CompareTag("Enemy") && hasPowerup) {
+        Rigidbody enemyRb = collision.gameObject.GetComponent<Rigidbody>();
+        Vector3 awayFromPlayer = (collision.gameObject.transform.position - transform.position);
+        enemyRb.AddForce(awayFromPlayer * 15.0f, ForceMode.Impulse);
+    }
+}
+```
+
+---
+
+## 🎮 Final Polish
+
+- **Physics Materials**: Create a Physics Material with high Bounciness (1.0) and drag it onto the Player and Enemy colliders for a "bouncy" sumo feel.
+- **Tags**: Ensure the Enemy prefab has the tag **"Enemy"**.
